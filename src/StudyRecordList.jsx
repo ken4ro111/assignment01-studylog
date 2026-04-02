@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { TextInput } from "./components/TextInput";
+import { useEffect, useState } from "react";
+import { InputField } from "./components/InputField.jsx";
 import { StudyRecordPreview } from "./components/StudyRecordPreview";
 import { Button } from "./components/Button";
 
@@ -18,6 +18,14 @@ export const StudyRecordList = () => {
     time: 0,
   });
 
+  const [totalTime, setTotalTime] = useState(
+    studyRecords.reduce((acc, current) => {
+      return acc + parseInt(current.time);
+    }, 0)
+  );
+
+  const [error, setError] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -28,25 +36,41 @@ export const StudyRecordList = () => {
   };
 
   const onClickAdd = () => {
+    if (studyRecord.time < 0) return;
+
+    setError(false);
+
+    if (studyRecord.title === "" || !studyRecord.time) {
+      setError(true);
+
+      return;
+    };
+
     setStudyRecords([...studyRecords, { title: studyRecord.title, time: studyRecord.time }]);
 
     setStudyRecord({ title: "", time: 0});
   };
 
+  useEffect(() => {
+    setTotalTime(studyRecords.reduce((acc, current) => {
+      return acc + parseInt(current.time);
+    }, 0));
+  }, [studyRecords]);
+
   return (
     <>
       <h1>学習記録一覧</h1>
       <div>
-        <TextInput
+        <InputField
+          label="学習内容"
           name="title"
-          placeholder="学習内容"
           type="text"
           value={studyRecord.title}
           onChange={handleChange}
         />
-        <TextInput
+        <InputField
+          label="学習時間 (h)"
           name="time"
-          placeholder="学習時間 (h)"
           type="number"
           value={studyRecord.time}
           onChange={handleChange}
@@ -63,9 +87,13 @@ export const StudyRecordList = () => {
           text="入力されている学習時間"
           value={`${studyRecord.time}時間`}
         />
-        <ul>
-          {studyRecords.map((record, index) => <li key={index}>{record.title}：{record.time}</li>)}
-        </ul>
+        {error && <p style={{ color: "red" }}>入力されていない項目があります</p>}
+        <div>
+          <ul>
+            {studyRecords.map((record, index) => <li key={index}>{record.title}：{record.time}</li>)}
+          </ul>
+        </div>
+        <p>{`合計時間: ${totalTime} / 1000(h)`}</p>
       </div>
     </>
   );

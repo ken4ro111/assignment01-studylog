@@ -1,6 +1,9 @@
 export const Button = (props) => {
   const { title, onClick } = props;
+
   return (
-    <button onClick={onClick}>{title}</button>
+    <div>
+      <button onClick={onClick}>{title}</button>
+    </div>
   )
 };
