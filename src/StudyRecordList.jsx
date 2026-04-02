@@ -5,13 +5,7 @@ import { Button } from "./components/Button";
 
 export const StudyRecordList = () => {
 
-  const [studyRecords, setStudyRecords] = useState(
-    [
-      { title: "勉強の記録1", time: 1},
-      { title: "勉強の記録2", time: 3},
-      { title: "勉強の記録3", time: 5},
-    ]
-  );
+  const [studyRecords, setStudyRecords] = useState([]);
 
   const [studyRecord, setStudyRecord] = useState({
     title: "",
@@ -50,6 +44,10 @@ export const StudyRecordList = () => {
 
     setStudyRecord({ title: "", time: 0});
   };
+
+  const onClickDelete = (index) => {
+    setStudyRecords(studyRecords.filter((record, i) => i !== index));
+  }
 
   useEffect(() => {
     setTotalTime(studyRecords.reduce((acc, current) => {
@@ -90,7 +88,15 @@ export const StudyRecordList = () => {
         {error && <p style={{ color: "red" }}>入力されていない項目があります</p>}
         <div>
           <ul>
-            {studyRecords.map((record, index) => <li key={index}>{record.title}：{record.time}</li>)}
+            {studyRecords.map((record, index) => (
+              <li key={index} style={{ display: "flex" }}>
+                {record.title}：{record.time}
+                <Button
+                  title="削除"
+                  onClick={() => onClickDelete(index)}
+                />
+              </li>
+            ))}
           </ul>
         </div>
         <p>{`合計時間: ${totalTime} / 1000(h)`}</p>
